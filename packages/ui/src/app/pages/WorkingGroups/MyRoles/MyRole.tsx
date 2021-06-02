@@ -28,6 +28,7 @@ import { useActivities } from '@/common/hooks/useActivities'
 import { useModal } from '@/common/hooks/useModal'
 import { MyRoleAccount } from '@/working-groups/components/Roles/MyRoleAccount'
 import { workerRoleTitle } from '@/working-groups/helpers'
+import useOpening from '@/working-groups/hooks/useOpening'
 import { useWorker } from '@/working-groups/hooks/useWorker'
 import { ApplicationDetailsModalCall } from '@/working-groups/modals/ApplicationDetailsModal'
 import { ModalTypes } from '@/working-groups/modals/ChangeAccountModal/constants'
@@ -36,8 +37,9 @@ import { LeaveRoleModalCall } from '@/working-groups/modals/LeaveRoleModal'
 export const MyRole = () => {
   const { id } = useParams<{ id: string }>()
 
-  const { worker, isLoading } = useWorker(id)
+  const { worker, isLoading: loadingWorker } = useWorker(id)
   const isActive = worker && worker.status === 'WorkerStatusActive'
+  const { opening, isLoading: loadingOpening } = worker ? useOpening(worker.id) : { opening: null, isLoading: false }
 
   const activities = useActivities()
   const warning =
@@ -77,7 +79,7 @@ export const MyRole = () => {
 
   const sideNeighborRef = useRef<HTMLDivElement>(null)
 
-  if (isLoading || !worker) {
+  if (loadingOpening || loadingWorker || !worker || !opening) {
     return <Loading />
   }
 
